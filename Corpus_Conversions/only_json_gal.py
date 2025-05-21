@@ -12,7 +12,7 @@ import os
 folder_path = ""
 
 # Find all JSON files, named "sinemojis_comments_" in the folder
-json_files = glob.glob(os.path.join(folder_path, 'sinemojis_comments_*.json'))
+json_files = glob.glob(os.path.join(folder_path, 'noemojis_comments_*.json'))
 
 for file_path in json_files:
     try: 
@@ -28,7 +28,7 @@ for file_path in json_files:
         filtered_data['text'] = filtered_data['text'].str.lower().fillna('')
     
         base_name = os.path.basename(file_path)
-        new_file_name = 'gl_comments_' + base_name[len('sinemojis_comments_'):]
+        new_file_name = 'gl_comments_' + base_name[len('noemojis_comments_'):]
         filtered_file_path = os.path.join(folder_path, new_file_name)
     
         filtered_data.to_json(filtered_file_path, orient='records', lines=False, force_ascii=False, indent=4)
