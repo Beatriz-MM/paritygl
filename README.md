@@ -1,6 +1,6 @@
 # ParityGL
 
-![Instagram Logo](https://github.com/Beatriz-MM/ParityGL/raw/main/assets/paritygl-logo.png)
+![Instagram Logo](https://github.com/Beatriz-MM/ParityGL/assets/paritygl-logo.jpeg)
 
 [![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC%20BY--NC--ND%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
 [![Python](https://img.shields.io/badge/Python-3.10-blue)](https://www.python.org/downloads/release/python-310/)
