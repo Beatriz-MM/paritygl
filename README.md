@@ -12,11 +12,11 @@
 
 ---
 
-## :octopus: Sobre o proxecto / About the project
+## :blue_heart::octopus:<img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/instagram.svg" alt="Instagram" width="16" style="vertical-align:middle;"/> Sobre o proxecto / About the project
 
-🧪 Este repositorio contén o traballo desenvolvido para o TFG de [Beatriz-MM](https://github.com/Beatriz-MM), que inclúe o código, os datasets orixinais e o corpus final utilizado para adestrar modelos de detección de toxicidade en lingua galega.
+Este repositorio contén o traballo desenvolvido para o TFG de [Beatriz-MM](https://github.com/Beatriz-MM), que inclúe o código, os datasets orixinais e o corpus final utilizado para adestrar modelos de detección de toxicidade en lingua galega.
 
-🧪 This repository contains the code, original datasets, and final corpus developed for the undergraduate thesis by [Beatriz-MM](https://github.com/Beatriz-MM), focused on detecting toxicity in Galician Instagram comments.
+This repository contains the code, original datasets, and final corpus developed for the undergraduate thesis by [Beatriz-MM](https://github.com/Beatriz-MM), focused on detecting toxicity in Galician Instagram comments.
 
 > [!NOTE]
 > A descrición detallada do proxecto, metodoloxía e resultados está dispoñíbel na memoria do TFG (enlace próximamente).  
@@ -24,7 +24,7 @@
 
 ---
 
-## 📂 Estrutura do repositorio / Repository structure
+## :open_file_folder: Estrutura do repositorio / Repository structure
 
 
 📁 /code/ → Código completo para preprocesamento, análise e modelos
@@ -44,7 +44,7 @@
 pip install -r requirements.txt
 ```
 
-## 💬 Citación / Citation
+## 💬 Citá / Citation
 
 Se este traballo che resulta útil, agradécese que o cites.
 If you find this work helpful, please consider citing it.
