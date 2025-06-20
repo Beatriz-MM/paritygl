@@ -12,7 +12,7 @@
 
 ---
 
-## :blue_heart::octopus:<img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/instagram.svg" alt="Instagram" width="16" style="vertical-align:middle;"/> Sobre o proxecto / About the project
+## :blue_heart::octopus:<img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram" width="16" style="vertical-align:middle;"/> Sobre o proxecto / About the project
 
 Este repositorio contén o traballo desenvolvido para o TFG de [Beatriz-MM](https://github.com/Beatriz-MM), que inclúe o código, os datasets orixinais e o corpus final utilizado para adestrar modelos de detección de toxicidade en lingua galega.
 
