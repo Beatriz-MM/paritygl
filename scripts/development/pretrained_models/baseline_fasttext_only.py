@@ -6,7 +6,6 @@
 import os
 import glob
 import re
-import sys
 import numpy as np
 import pandas as pd
 import fasttext
@@ -18,16 +17,18 @@ from sklearn.svm import SVC
 from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score, confusion_matrix
 from sklearn.model_selection import GridSearchCV, train_test_split
 
+RANDOM_SEED = 42
 
 # Paths for training datasets
 toots_csv_path = '/home/beaunix/TFG/GalMisoCorpus2023/corpus/toots.csv'
 tweets_csv_path = '/home/beaunix/TFG/tweets.csv'
 
 # Path to the folder containing all test CSVs
-csv_folder = '/home/beaunix/TFG/langdetect/PRUEBA/Prueba_embeddings/'
+csv_folder = '/home/beaunix/TFG/langdetect/PRUEBA/MiEntreno/CSV_DATA/'
+csv_pattern = "csv_gl_comments_*.csv"  # pattern to match all CSVs
 
 # Output path for predictions
-output_path = '/home/beaunix/TFG/langdetect/PRUEBA/Prueba_embeddings/Ultimas_pruebas/ultimos_resultados/resultado_predictions_sinfunc_matriz.csv'
+output_path = '/home/beaunix/TFG/langdetect/PRUEBA/EntrenoPrevios/Resultados/resultado_predictions_sinfunc_matriz.csv'
 
 
 # ------------------ PREPROCESSING ------------------
@@ -65,7 +66,6 @@ def generate_sentence_embeddings(tweet, fasttext_model):
         raise
 
 def load_datasets():
-
     # Dataset for class 0 (non-misogynistic toots)
     df_toots = pd.read_csv(toots_csv_path)
     df_toots['content'] = df_toots['content'].apply(preprocess_tweet)
@@ -111,7 +111,7 @@ X, y = load_datasets()
 sentence_embeddings = prepare_embeddings(X, fasttext_model)
 
 # Split dataset into training and testing
-X_train, X_test, y_train, y_test = train_test_split(sentence_embeddings, y, test_size=0.3)
+X_train, X_test, y_train, y_test = train_test_split(sentence_embeddings, y, test_size=0.3, random_state=RANDOM_SEED)
 
 # Define parameters for the SVM model
 param_grid = {
@@ -140,7 +140,7 @@ sns.heatmap(cmatrix, annot=True, fmt="d", cmap="Blues", cbar=False)
 plt.title("Confusion Matrix")
 plt.ylabel("True Label")
 plt.xlabel("Predicted Label")
-plt.savefig("./ultimos_resultados/matriz_confusion_sinfunc.png")
+plt.savefig("./Resultados/matriz_confusion_sinfunc.png")
 plt.show()
 plt.close()
 
@@ -150,7 +150,7 @@ assert np.array_equal(y_pred, y_pred_before), "y_pred has been modified!"
 
 # ------------------ PREDICTIONS ON MULTIPLE CSVs ------------------
 
-csv_files = glob.glob(os.path.join(csv_folder, 'csv_gal_comments_*.csv'))
+csv_files = glob.glob(os.path.join(csv_folder, csv_pattern))
 df_list = []
 
 # Load and preprocess each CSV

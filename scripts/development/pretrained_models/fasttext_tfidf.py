@@ -3,8 +3,9 @@
 # Description:
 # Python version: 3.10.12
 
+import os
 import re
-import sys
+import glob
 import numpy as np
 import pandas as pd
 import fasttext
@@ -19,14 +20,22 @@ from sklearn.model_selection import GridSearchCV, train_test_split
 from scipy import sparse
 from scipy.sparse import hstack
 
+RANDOM_SEED = 42
 
+# Paths for training datasets
 toots_csv_path = '/home/beaunix/TFG/GalMisoCorpus2023/corpus/toots.csv'
 tweets_csv_path = '/home/beaunix/TFG/tweets.csv'
 
-csv_path = '/home/beaunix/TFG/langdetect/PRUEBA/Prueba_embeddings/csv_gl_comments_prueba.csv'
-output_path = '/home/beaunix/TFG/langdetect/PRUEBA/Prueba_embeddings/Ultimas_pruebas/ultimos_resultados/resultado_predictions_sin_chi2.csv'
+# Path to the folder containing all test CSVs
+csv_folder = '/home/beaunix/TFG/langdetect/PRUEBA/MiEntreno/CSV_DATA/'
+csv_pattern = "csv_gl_comments_*.csv"  # pattern to match all CSVs
 
-# Tweet preprocessing: clean text and remove noise
+# Output path for predictions
+output_path = '/home/beaunix/TFG/langdetect/PRUEBA/EntrenoPrevios/Resultados/resultado_predictions_sin_chi2.csv'
+
+
+# ------------------ PREPROCESSING ------------------
+
 def preprocess_tweet(tweet):
     if not isinstance(tweet, str) or tweet is None:
         return None
@@ -43,8 +52,6 @@ def preprocess_tweet(tweet):
         return None
     return tweet
 
-
-# Generate FastText sentence embedding by averaging word vectors
 def generate_sentence_embeddings(tweet, fasttext_model):
     try:
         tokenizer = TweetTokenizer(preserve_case=False, reduce_len=True)
@@ -61,8 +68,6 @@ def generate_sentence_embeddings(tweet, fasttext_model):
         print(f"Error generating embeddings for tweet '{tweet}': {e}")
         raise
 
-
-# Load and label datasets
 def load_datasets():
     # Load class 0: non-misogynistic toots
     df_toots = pd.read_csv(toots_csv_path)
@@ -84,24 +89,23 @@ def load_datasets():
 
     return X, y
 
-
-# Prepare sentence embeddings from text series
 def prepare_embeddings(text_series, fasttext_model):
     sentence_embeddings = text_series.apply(lambda tweet: generate_sentence_embeddings(tweet, fasttext_model))
     sentence_embeddings = np.array(sentence_embeddings.tolist())
     return sentence_embeddings
 
-
-# Train SVM using grid search
 def train_model(X_train, y_train, combined_features, param_grid):
     grid_search = GridSearchCV(estimator=combined_features, param_grid=param_grid, scoring='f1', cv=10)
     grid_search.fit(X_train, y_train)
-    best_model = grid_search.best_estimator_
-    return best_model
+    trained_model = grid_search.best_estimator_
+    return trained_model
 
+
+# ------------------ MODEL TRAINING ------------------
 
 # Download and load FastText Galician model
-fasttext.util.download_model('gl', if_exists='ignore')
+if not os.path.exists('cc.gl.300.bin'):
+    fasttext.util.download_model('gl', if_exists='ignore')
 fasttext_model = fasttext.load_model('cc.gl.300.bin')
 
 # Prepare data and generate embeddings
@@ -110,10 +114,9 @@ sentence_embeddings = prepare_embeddings(X, fasttext_model)
 
 # TF-IDF representation
 vectorizer = CountVectorizer()
-bow_features = vectorizer.fit_transform(X)
 tfidf_transformer = TfidfTransformer()
-tfidf_features = tfidf_transformer.fit_transform(bow_features)
-selected_features = tfidf_features  # Using all TF-IDF features
+bow_features = vectorizer.fit_transform(X)
+selected_features = tfidf_transformer.fit_transform(bow_features)
 
 # Combine embeddings with TF-IDF
 sentence_embeddings = [np.fromstring(embedding, sep=' ') for embedding in sentence_embeddings]
@@ -133,17 +136,15 @@ print("Shape of combined_features:", combined_features.shape)
 print("Shape of y:", y.shape)
 
 # Train/test split (70% training, 30% testing)
-X_train, X_test, y_train, y_test = train_test_split(combined_features, y, test_size=0.3)
+X_train, X_test, y_train, y_test = train_test_split(combined_features, y, test_size=0.3, random_state=RANDOM_SEED)
 
-svc = SVC()
 
+svc = SVC(random_state=RANDOM_SEED)
 print("Starting Grid Search...")
-grid_search = GridSearchCV(estimator=svc, param_grid=param_grid, scoring='f1', cv=10, verbose=2)
-grid_search.fit(X_train, y_train)
-best_model = grid_search.best_estimator_
+trained_model = train_model(X_train, y_train, svc, param_grid)
 
 # MODEL EVALUATION
-y_pred = best_model.predict(X_test)
+y_pred = trained_model.predict(X_test)
 cmatrix = confusion_matrix(y_test, y_pred)
 
 print("Evaluation on Test Set:")
@@ -158,19 +159,27 @@ sns.heatmap(cmatrix, annot=True, fmt="d", cmap="Blues", cbar=False)
 plt.title("Confusion Matrix")
 plt.ylabel("True Label")
 plt.xlabel("Predicted Label")
-plt.savefig("./ultimos_resultados/matriz_confusion_sin_chi2.png")
+plt.savefig("./Resultados/matriz_confusion_sin_chi2.png")
 plt.close()
 
-# Load new data and preprocess
-try:
-    df = pd.read_csv(csv_path)
-    df['text'] = df['text'].apply(preprocess_tweet)
-    df = df.dropna(subset=['text'])
-    print("CSV file loaded successfully.")
-except Exception as e:
-    print(f"Error loading CSV file: {e}")
-    sys.exit(1)
 
+# ------------------ PREDICTIONS ON MULTIPLE CSVs ------------------
+
+# Load new data and preprocess
+csv_files = glob.glob(os.path.join(csv_folder, csv_pattern))
+df_list = []
+
+for file in csv_files:
+    try:
+        df_temp = pd.read_csv(file)
+        df_temp['text'] = df_temp['text'].apply(preprocess_tweet)
+        df_temp = df_temp.dropna(subset=['text'])
+        df_list.append(df_temp)
+        print(f"{os.path.basename(file)} loaded successfully.")
+    except Exception as e:
+        print(f"Error loading {file}: {e}")
+
+df = pd.concat(df_list, ignore_index=True)
 
 # Generate sentence embeddings for new texts
 new_text_embeddings = prepare_embeddings(df['text'], fasttext_model)
@@ -179,10 +188,7 @@ new_text_embeddings = np.array(new_text_embeddings, dtype=np.float32)
 
 # Generate BoW + TF-IDF for new texts
 new_bow_features = vectorizer.transform(df['text'])
-new_tfidf_features = tfidf_transformer.transform(new_bow_features)
-
-# Select relevant features (no selection used here)
-new_selected_features = new_tfidf_features
+new_selected_features = tfidf_transformer.transform(new_bow_features)
 
 # Combine embeddings with TF-IDF features
 new_text_embeddings_sparse = sparse.csr_matrix(new_text_embeddings)
@@ -190,10 +196,10 @@ new_combined_features = hstack([new_text_embeddings_sparse, new_selected_feature
 
 # Check feature dimensions before prediction
 print("Shape of new_combined_features:", new_combined_features.shape)
-print("Model expects:", best_model.n_features_in_)
+print("Model expects:", trained_model.n_features_in_)
 
 # Predict and save results
-predictions = best_model.predict(new_combined_features)
+predictions = trained_model.predict(new_combined_features)
 df['predictions'] = predictions
 df[['text', 'predictions']].to_csv(output_path, index=False)
 print(f"Predictions saved to {output_path}")

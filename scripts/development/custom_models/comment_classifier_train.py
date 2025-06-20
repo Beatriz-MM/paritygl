@@ -26,7 +26,7 @@ RANDOM_SEED = 42
 # Paths to input datasets
 negative_dataset_path = "/home/beaunix/TFG/langdetect/PRUEBA/MiEntreno/negative_dataset.csv" 
 csv_folder_path = "/home/beaunix/TFG/langdetect/PRUEBA/MiEntreno/CSV_DATA/"
-csv_pattern = "csv_gal_comments_*.csv"  # pattern to match all CSVs
+csv_pattern = "csv_gl_comments_*.csv"  # pattern to match all CSVs
 
 # Paths to output files
 report_path = "/home/beaunix/TFG/langdetect/PRUEBA/MiEntreno/classification_comments_report.txt"
