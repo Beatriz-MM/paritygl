@@ -11,8 +11,7 @@
 ###### 📚 _Undergraduate Thesis: Toxicity analysis on Galician Instagram accounts: development of a detection system_
 
 ---
-
-## :blue_heart::octopus:<img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram" width="16" style="vertical-align:middle;"/> Sobre o proxecto / About the project
+## :octopus:<img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram" width="18" style="vertical-align: -5px;"/> Sobre o proxecto / About the project
 
 Este repositorio contén o traballo desenvolvido para o TFG de [Beatriz-MM](https://github.com/Beatriz-MM), que inclúe o código, os datasets orixinais e o corpus final utilizado para adestrar modelos de detección de toxicidade en lingua galega.
 
@@ -26,7 +25,6 @@ This repository contains the code, original datasets, and final corpus developed
 
 ## :open_file_folder: Estrutura do repositorio / Repository structure
 
-
 📁 /code/ → Código completo para preprocesamento, análise e modelos
 📁 /datasets/ → Datos orixinais sen procesar
 📁 /corpus/ → Corpus final con etiquetas para adestramento
@@ -37,8 +35,7 @@ This repository contains the code, original datasets, and final corpus developed
 
 ## 📦 Instalación / Installation
 
-:octopus: Instala as dependencias executando:  
-:gb: Install all required dependencies with:
+Instala as dependencias executando: / Install all required dependencies with:
 
 ```bash
 pip install -r requirements.txt
