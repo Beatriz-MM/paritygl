@@ -8,7 +8,7 @@
 [![Python](https://img.shields.io/badge/Python-3.10-blue)](https://www.python.org/downloads/release/python-310/)
 
 ###### 📚 _TFG: Análise de toxicidade en contas galegas de Instagram: desenvolvemento dun sistema de detección_  
-###### 📚 _Undergraduate Thesis: Toxicity analysis on Galician Instagram accounts: development of a detection system_
+###### 📚 _FYP: Toxicity analysis on Galician Instagram accounts: development of a detection system_
 
 ---
 ## :octopus:<img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram" width="18" style="vertical-align: -5px;"/> Sobre o proxecto / About the project
@@ -23,15 +23,19 @@ This repository contains the code, original datasets, and final corpus developed
 
 ---
 
-## :open_file_folder: Estrutura do repositorio / Repository structure
+## 📂 Estrutura do repositorio / Repository structure
 
-📁 /code/ → Código completo para preprocesamento, análise e modelos
-📁 /datasets/ → Datos orixinais sen procesar
-📁 /corpus/ → Corpus final con etiquetas para adestramento
-📄 requirements.txt → Dependencias do proxecto
+- 📁 **/assets/** — Recursos gráficos do proxecto / Graphic resources
+- 📁 **/corpus/** — Corpus final etiquetado para adestramento / Final labeled corpus for training
+- 📁 **/raw_data/** — Datos brutos recollidos de Instagram (.zip por categoría) / Raw data collected from Instagram (zipped by category)
+- 📁 **/scripts/** — Código dividido por tarefas / Code organized by task:
+  - 📄 `corpus_conversions/` — Conversión entre formatos de corpus / Corpus format conversion
+  - 📄 `data_collection/` — Recollida de datos / Data collection scripts
+  - 📄 `development/` — Scripts experimentais e probas / Experimental and testing scripts
+  - 📄 `emoji_analysis/` — Análise de emojis nos comentarios / Emoji analysis
+  - 📄 `preprocessing/` — Limpeza e preparación textual / Text cleaning and preprocessing
 
 
----
 
 ## 📦 Instalación / Installation
 
@@ -48,12 +52,15 @@ If you find this work helpful, please consider citing it.
 
     (BibTeX ou referencia aparecerá aquí se é necesario máis adiante)
 
-⚠️ Aviso / Disclaimer
+## ⚠️ Aviso / Disclaimer
 
-    Este repositorio contén datos recollidos de redes sociais e pode incluír contido sensible ou ofensivo. O uso deste material está restrinxido a fins de investigación ou educativos.
-    This repository contains social media data and may include sensitive or offensive content. Use of this material is restricted to research or educational purposes only.
+> Este repositorio contén datos recollidos de redes sociais e pode incluír contido sensible ou ofensivo.  
+> This repository contains social media data and may include sensitive or offensive content.  
+>  
+> O uso deste material está restrinxido a fins de investigación ou educativos.  
+> Use of this material is restricted to research or educational purposes only.
 
-🔗 Ligazóns / Links
+## 🔗 Ligazóns / Links
 
     📄 Publicación do TFG (próximamente)
 
@@ -61,12 +68,31 @@ If you find this work helpful, please consider citing it.
 
     📸 Instagram: @paritygl
 
-🛡️ Licenza / License
+## 🛡️ Licenza / License
 
-Este proxecto está baixo a licenza
+Este proxecto utiliza a **Mozilla Public License 2.0 (MPL-2.0)** para todo o código fonte.
 
-    Este traballo está baixo unha licenza Creative Commons Atribución-NonComercial-SenObraDerivada 4.0 Internacional.
-    This work is licensed under a Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License.
+Porén, os arquivos creados pola autora do proxecto están tamén suxeitos á **Commons Clause License Condition v1.0**, que restrinxe o dereito a usar o software con fins comerciais.
+
+Isto significa que:  
+- Podes **usar**, modificar e compartir o código para fins persoais, académicos ou non comerciais.  
+- Non podes **vender**, redistribuír ou ofrecer o software como parte dun produto ou servizo comercial sen permiso explícito.
+
+➡️ Para máis detalles, consulta o arquivo [`COMMONS-CLAUSE.txt`](./COMMONS-CLAUSE.txt) ou visita [https://commonsclause.com](https://commonsclause.com).
+
+---
+
+This project uses the **Mozilla Public License 2.0 (MPL-2.0)** for all source code.
+
+However, files authored by the project creator are also subject to the **Commons Clause License Condition v1.0**, which restricts the right to use the software for commercial purposes.
+
+This means that:  
+- You **can** use, modify, and share the code for personal, academic, or non-commercial purposes.  
+- You **cannot** sell, redistribute, or offer the software as part of a commercial product or service without explicit permission.
+
+➡️ For more details, see the [`COMMONS-CLAUSE.txt`](./COMMONS-CLAUSE.txt) file or visit [https://commonsclause.com](https://commonsclause.com).
+
+
 
 
 
