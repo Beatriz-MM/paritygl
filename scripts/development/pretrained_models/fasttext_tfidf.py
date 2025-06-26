@@ -5,7 +5,6 @@
 
 import os
 import re
-import glob
 import numpy as np
 import pandas as pd
 import fasttext
@@ -26,12 +25,12 @@ RANDOM_SEED = 42
 toots_csv_path = '/home/beaunix/TFG/GalMisoCorpus2023/corpus/toots.csv'
 tweets_csv_path = '/home/beaunix/TFG/tweets.csv'
 
-# Path to the folder containing all test CSVs
-csv_folder = '/home/beaunix/TFG/langdetect/PRUEBA/MiEntreno/CSV_DATA/'
-csv_pattern = "csv_gl_comments_*.csv"  # pattern to match all CSVs
+# Path for the CSV
+csv_sample = '/home/beaunix/TFG/langdetect/PRUEBA/EntrenoPrevios/csv_gl_comments_prueba.csv'
 
-# Output path for predictions
-output_path = '/home/beaunix/TFG/langdetect/PRUEBA/EntrenoPrevios/Resultados/resultado_predictions_sin_chi2.csv'
+# Output path for predictions and matrix
+output_path = '/home/beaunix/TFG/langdetect/PRUEBA/EntrenoPrevios/Resultados/predictions_without_chi2.csv'
+confusion_matrix_path = "./Resultados/confusion_matrix_without_chi2.png"
 
 
 # ------------------ PREPROCESSING ------------------
@@ -159,35 +158,30 @@ sns.heatmap(cmatrix, annot=True, fmt="d", cmap="Blues", cbar=False)
 plt.title("Confusion Matrix")
 plt.ylabel("True Label")
 plt.xlabel("Predicted Label")
-plt.savefig("./Resultados/matriz_confusion_sin_chi2.png")
+plt.savefig(confusion_matrix_path)
 plt.close()
 
 
 # ------------------ PREDICTIONS ON MULTIPLE CSVs ------------------
 
 # Load new data and preprocess
-csv_files = glob.glob(os.path.join(csv_folder, csv_pattern))
-df_list = []
+try:
+    df_all = pd.read_csv(csv_sample)
+    df_all['text'] = df_all['text'].apply(preprocess_tweet)
+    df_all = df_all.dropna(subset=['text'])
+    print(f"{os.path.basename(csv_sample)} loaded and preprocessed successfully.")
+except Exception as e:
+    print(f"Error loading {csv_sample}: {e}")
+    df_all = pd.DataFrame()
 
-for file in csv_files:
-    try:
-        df_temp = pd.read_csv(file)
-        df_temp['text'] = df_temp['text'].apply(preprocess_tweet)
-        df_temp = df_temp.dropna(subset=['text'])
-        df_list.append(df_temp)
-        print(f"{os.path.basename(file)} loaded successfully.")
-    except Exception as e:
-        print(f"Error loading {file}: {e}")
-
-df = pd.concat(df_list, ignore_index=True)
 
 # Generate sentence embeddings for new texts
-new_text_embeddings = prepare_embeddings(df['text'], fasttext_model)
+new_text_embeddings = prepare_embeddings(df_all['text'], fasttext_model)
 new_text_embeddings = [np.fromstring(embedding, sep=' ') for embedding in new_text_embeddings]
 new_text_embeddings = np.array(new_text_embeddings, dtype=np.float32)
 
 # Generate BoW + TF-IDF for new texts
-new_bow_features = vectorizer.transform(df['text'])
+new_bow_features = vectorizer.transform(df_all['text'])
 new_selected_features = tfidf_transformer.transform(new_bow_features)
 
 # Combine embeddings with TF-IDF features
@@ -200,6 +194,6 @@ print("Model expects:", trained_model.n_features_in_)
 
 # Predict and save results
 predictions = trained_model.predict(new_combined_features)
-df['predictions'] = predictions
-df[['text', 'predictions']].to_csv(output_path, index=False)
+df_all['predictions'] = predictions
+df_all[['text', 'predictions']].to_csv(output_path, index=False)
 print(f"Predictions saved to {output_path}")

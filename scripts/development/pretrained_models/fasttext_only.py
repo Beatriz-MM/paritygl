@@ -4,7 +4,6 @@
 # Python version: 3.10.12
 
 import os
-import glob
 import re
 import numpy as np
 import pandas as pd
@@ -23,12 +22,12 @@ RANDOM_SEED = 42
 toots_csv_path = '/home/beaunix/TFG/GalMisoCorpus2023/corpus/toots.csv'
 tweets_csv_path = '/home/beaunix/TFG/tweets.csv'
 
-# Path to the folder containing all test CSVs
-csv_folder = '/home/beaunix/TFG/langdetect/PRUEBA/MiEntreno/CSV_DATA/'
-csv_pattern = "csv_gl_comments_*.csv"  # pattern to match all CSVs
+# Path for CSV
+csv_sample = '/home/beaunix/TFG/langdetect/PRUEBA/EntrenoPrevios/csv_gl_comments_prueba.csv'
 
-# Output path for predictions
-output_path = '/home/beaunix/TFG/langdetect/PRUEBA/EntrenoPrevios/Resultados/resultado_predictions_sinfunc_matriz.csv'
+# Output path for predictions and matrix
+output_path = '/home/beaunix/TFG/langdetect/PRUEBA/EntrenoPrevios/Resultados/predictions_fasttext_only.csv'
+confusion_matrix_path = "./Resultados/confusion_matrix_fasttextOnly.png"
 
 
 # ------------------ PREPROCESSING ------------------
@@ -140,7 +139,7 @@ sns.heatmap(cmatrix, annot=True, fmt="d", cmap="Blues", cbar=False)
 plt.title("Confusion Matrix")
 plt.ylabel("True Label")
 plt.xlabel("Predicted Label")
-plt.savefig("./Resultados/matriz_confusion_sinfunc.png")
+plt.savefig(confusion_matrix_path)
 plt.show()
 plt.close()
 
@@ -150,22 +149,14 @@ assert np.array_equal(y_pred, y_pred_before), "y_pred has been modified!"
 
 # ------------------ PREDICTIONS ON MULTIPLE CSVs ------------------
 
-csv_files = glob.glob(os.path.join(csv_folder, csv_pattern))
-df_list = []
-
-# Load and preprocess each CSV
-for file in csv_files:
-    try:
-        df = pd.read_csv(file)
-        df['text'] = df['text'].apply(preprocess_tweet)
-        df = df.dropna(subset=['text'])
-        df_list.append(df)
-        print(f"{os.path.basename(file)} loaded successfully.")
-    except Exception as e:
-        print(f"Error loading {file}: {e}")
-
-# Combine all test data
-df_all = pd.concat(df_list, ignore_index=True)
+try:
+    df_all = pd.read_csv(csv_sample)
+    df_all['text'] = df_all['text'].apply(preprocess_tweet)
+    df_all = df_all.dropna(subset=['text'])
+    print(f"{os.path.basename(csv_sample)} loaded and preprocessed successfully.")
+except Exception as e:
+    print(f"Error loading {csv_sample}: {e}")
+    df_all = pd.DataFrame()
 
 # Generate embeddings and predict
 new_text_embeddings = prepare_embeddings(df_all['text'], fasttext_model)
