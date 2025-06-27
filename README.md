@@ -4,8 +4,12 @@
   <img src="https://github.com/Beatriz-MM/ParityGL/raw/main/assets/paritygl-logo.jpeg" width="200" alt="Logo de ParityGL">
 </div>
 
-[![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC%20BY--NC--ND%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
+<br>
+
 [![Python](https://img.shields.io/badge/Python-3.10-blue)](https://www.python.org/downloads/release/python-310/)
+[![NLP](https://img.shields.io/badge/Domain-NLP-blue)](https://en.wikipedia.org/wiki/Natural_language_processing)
+[![License: MPL-2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](https://www.mozilla.org/en-US/MPL/2.0/)
+[![Commons Clause](https://img.shields.io/badge/License-Commons_Clause-red.svg)](https://commonsclause.com/)
 
 ###### 📚 _TFG: Análise de toxicidade en contas galegas de Instagram: desenvolvemento dun sistema de detección_  
 ###### 📚 _FYP: Toxicity analysis on Galician Instagram accounts: development of a detection system_
@@ -13,9 +17,12 @@
 ---
 ## :octopus:<img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram" width="18" style="vertical-align: -5px;"/> Sobre o proxecto / About the project
 
-Este repositorio contén o traballo desenvolvido para o TFG de [Beatriz-MM](https://github.com/Beatriz-MM), que inclúe o código, os datasets orixinais e o corpus final utilizado para adestrar modelos de detección de toxicidade en lingua galega.
+Este repositorio contén o código, os datasets orixinais e o corpus final desenvolvido para o TFG de [Beatriz-MM](https://github.com/Beatriz-MM), centrado na detección de toxicidade nos comentarios en galego de Instagram, con especial atención aos de carácter misóxino.
+Este traballo toma como punto de partida o proxecto [GalMisoCorpus2023](https://github.com/luciamariaalvarezcrespo/GalMisoCorpus2023), avaliando os seus modelos no contexto de Instagram e desenvolvendo novas solucións adaptadas.
 
-This repository contains the code, original datasets, and final corpus developed for the undergraduate thesis by [Beatriz-MM](https://github.com/Beatriz-MM), focused on detecting toxicity in Galician Instagram comments.
+
+This repository contains the code, the original datasets, and the final corpus developed for the Bachelor's Thesis of [Beatriz-MM](https://github.com/Beatriz-MM), focused on the detection of toxicity in Galician Instagram comments, with special attention to those of a misogynistic nature.
+This work builds upon the [GalMisoCorpus2023](https://github.com/luciamariaalvarezcrespo/GalMisoCorpus2023) project by evaluating its models in the context of Instagram and developing new solutions adapted to this platform.
 
 > [!NOTE]
 > A descrición detallada do proxecto, metodoloxía e resultados está dispoñíbel na memoria do TFG (enlace próximamente).  
@@ -39,11 +46,17 @@ This repository contains the code, original datasets, and final corpus developed
 
 ## 📦 Instalación / Installation
 
-Instala as dependencias executando: / Install all required dependencies with:
-
+Instala as dependencias executando: / Install the dependencies by running:
 ```bash
 pip install -r requirements.txt
 ```
+> [!NOTE]
+> 💡 Usa unha contorna virtual en Linux para evitar conflitos. / Use a virtual environment on Linux to avoid conflicts.
+> 
+> O ficheirto atópase en / The file is located in   
+> https://github.com/luciamariaalvarezcrespo/GalMisoCorpus2023/blob/main/requirements.txt
+
+
 
 ## 💬 Citá / Citation
 
