@@ -5,6 +5,7 @@
 
 import pandas as pd
 
+# IMPORTANT: Insert correct paths
 input_txt_path = ""
 output_csv_path = ""
 

@@ -1,6 +1,8 @@
 # Author: Beatriz Molina Muñiz (GitHub: @Beatriz-MM)
-# Last modified: 
-# Description:
+# Last modified: 23/06/2025
+# Description: Loads and preprocesses two labeled datasets (non-misogynistic toots and misogynistic tweets), generates sentence 
+# embeddings using a FastText Galician model and trains an SVM classifier to detect misogynistic content. 
+# The model is evaluated on a separate sample dataset of Instagram comments and used to generate predictions.
 # Python version: 3.10.12
 
 import os
@@ -19,20 +21,29 @@ from sklearn.model_selection import GridSearchCV, train_test_split
 RANDOM_SEED = 42
 
 # Paths for training datasets
-toots_csv_path = '/home/beaunix/TFG/GalMisoCorpus2023/corpus/toots.csv'
-tweets_csv_path = '/home/beaunix/TFG/tweets.csv'
+toots_csv_path = ""# Example: "~/corpus/toots.csv"
+tweets_csv_path = ""# Example: "~/corpus/tweets.csv"
 
-# Path for CSV
-csv_sample = '/home/beaunix/TFG/langdetect/PRUEBA/EntrenoPrevios/csv_gl_comments_prueba.csv'
+# Path sample CSV
+csv_sample = ""# Example: "~/petrained_models/csv_gl_comments_sample.csv"
 
 # Output path for predictions and matrix
-output_path = '/home/beaunix/TFG/langdetect/PRUEBA/EntrenoPrevios/Resultados/predictions_fasttext_only.csv'
-confusion_matrix_path = "./Resultados/confusion_matrix_fasttextOnly.png"
+output_path = ""# Example: "~/Results_fasttext_only/predictions_fasttext_only.csv"
+confusion_matrix_path = ""# Example: "~/Results_fasttext_only/confusion_matrix_fasttextOnly.png"
 
 
 # ------------------ PREPROCESSING ------------------
 
 def preprocess_tweet(tweet):
+    """
+    Clean and normalize a tweet by removing noise and standardizing the text.
+
+    Args:
+        tweet (str): Raw tweet text.
+        
+    Returns:
+        str or None: Cleaned tweet text, or None if input is invalid or results in empty string.
+    """
     if not isinstance(tweet, str) or tweet is None:
         return None
     
@@ -49,6 +60,20 @@ def preprocess_tweet(tweet):
 
 
 def generate_sentence_embeddings(tweet, fasttext_model):
+    """
+    Generate an embedding for a tweet by averaging FastText word vectors.
+
+    Args:
+        tweet (str): Cleaned tweet text.
+        fasttext_model: Loaded FastText model with get_word_vector method.
+
+    Returns:
+        numpy.ndarray: A 1D array representing the averaged word embeddings for the tweet.
+
+    Raises:
+        ValueError: If tokenization results in no tokens.
+        Exception: For unexpected errors during embedding generation.
+    """
     try: 
         tokenizer = TweetTokenizer(preserve_case=False, reduce_len=True)
         tokens = tokenizer.tokenize(tweet)
@@ -64,33 +89,60 @@ def generate_sentence_embeddings(tweet, fasttext_model):
         print(f"Error generating embeddings for tweet '{tweet}': {e}")
         raise
 
+
 def load_datasets():
-    # Dataset for class 0 (non-misogynistic toots)
+    """
+    Load, clean, and label two datasets: non-misogynistic toots (class 0) and misogynistic tweets (class 1).
+
+    Returns:
+        tuple: 
+            - X (pandas.Series): Combined and preprocessed text data.
+            - y (pandas.Series): Corresponding binary labels (0 for non-misogynistic, 1 for misogynistic).
+    """
     df_toots = pd.read_csv(toots_csv_path)
     df_toots['content'] = df_toots['content'].apply(preprocess_tweet)
     df_toots = df_toots.dropna(subset=['content'])  # Remove rows with empty toots
     X_0 = df_toots['content']
     y_0 = pd.Series([0] * len(X_0))
 
-    # Dataset for class 1 (misogynistic tweets)
     df_tweets = pd.read_csv(tweets_csv_path)
     df_tweets['content'] = df_tweets['content'].apply(preprocess_tweet)
     df_tweets = df_tweets.dropna(subset=['content'])  # Remove rows with empty tweets
     X_1 = df_tweets['content'] 
     y_1 = pd.Series([1] * len(X_1))
 
-    # Combine both datasets
     X = pd.concat([X_0, X_1], ignore_index=True)
     y = pd.concat([y_0, y_1], ignore_index=True)
 
     return X, y
 
 def prepare_embeddings(text_series, fasttext_model):
+    """
+    Generate sentence embeddings for a series of text documents using FastText.
+
+    Args:
+        text_series (pandas.Series): Series of cleaned tweets or texts.
+        fasttext_model: Loaded FastText model.
+
+    Returns:
+        numpy.ndarray: 2D array of shape (n_samples, embedding_dim) with tweet embeddings.
+    """
     sentence_embeddings = text_series.apply(lambda tweet: generate_sentence_embeddings(tweet, fasttext_model))
     sentence_embeddings = np.array(sentence_embeddings.tolist())
     return sentence_embeddings
 
 def train_model(X_train, y_train, param_grid):
+    """
+    Train a Support Vector Classifier using grid search for hyperparameter tuning.
+
+    Args:
+        X_train (numpy.ndarray): Training feature vectors.
+        y_train (pandas.Series or numpy.ndarray): Training labels.
+        param_grid (dict): Dictionary with parameters names (`str`) as keys and lists of parameter settings to try.
+
+    Returns:
+        sklearn.svm.SVC: Best trained SVC model from grid search.
+    """
     grid_search = GridSearchCV(estimator=SVC(), param_grid=param_grid, scoring='f1', cv=10)
     grid_search.fit(X_train, y_train)
     trained_model = grid_search.best_estimator_

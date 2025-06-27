@@ -1,8 +1,8 @@
 # Author: Beatriz Molina Muñiz (GitHub: @Beatriz-MM)
-# Last modified: 05/06/2025
-# Description: This script trains a linear SVM model to classify Instagram comments as negative (label=1) or not (label=0).  
-# It combines a set of confirmed negative examples with a dataset, uses FastText embeddings (cc.gl.300.bin), 
-# and evaluates the model performance.
+# Last modified: 23/06/2025
+# Description: Trains an SVM model to classify Instagram comments as negative (label=1) or not (label=0).
+# Combines labeled data with confirmed negatives, uses FastText embeddings (Galician), 
+# applies TF-IDF with chi² feature selection, and trains the model in batches.
 # Python version: 3.10.12
 
 import os
@@ -28,32 +28,38 @@ from scipy.sparse import hstack
 
 RANDOM_SEED = 42
 
+# IMPORTANT: Insert correct paths
 # Paths to input datasets
-negative_dataset_path = "/home/beaunix/TFG/langdetect/PRUEBA/MiEntreno/negative_dataset.csv" 
-csv_path = "/home/beaunix/TFG/langdetect/PRUEBA/MiEntreno/comentarios_etiquetados.csv"
+negative_dataset_path = "" # Example: "~/corpus/negative_dataset.csv"
+csv_path = "" # Example: "~/csv_datasets/all_comments.csv"
 
 # Paths to output files
-report_path = "/home/beaunix/TFG/langdetect/PRUEBA/MiEntreno/classification_comments_report_batches.txt"
-matrix_path = "/home/beaunix/TFG/langdetect/PRUEBA/MiEntreno/confusion_matrix_training_batches.png"
-output_path = '/home/beaunix/TFG/langdetect/PRUEBA/MiEntreno/result_predictions_training_batches.csv'
+report_path = "" # Example: "~/batches_results/classification_comments_report_batches.txt"
+matrix_path = "" # Example: "~/batches_results/confusion_matrix_batches.png"
+output_path = "" # Example: "~/batches_results/result_predictions_batches.csv"
+
 
 # ---------- FUNCTIONS ----------
 
 def load_dataset():
-    # Load confirmed negative comments and label them as 1
+    """
+    Load and merge the labeled dataset with additional negative samples.
+
+    Reads a CSV with labeled data and another with confirmed negative examples,
+    assigns label 1 to negatives, concatenates both, removes duplicates, 
+    and shuffles the resulting dataset.
+
+    Returns:
+        pandas.DataFrame: Combined and shuffled dataset with 'text' and 'label' columns.
+    """
     neg_df = pd.read_csv(negative_dataset_path, usecols=['text'])
     neg_df['label'] = 1  
 
-    # Load full labeled dataset (with columns: id, language, text, label)
     dataset_df = pd.read_csv(csv_path, usecols=['text', 'label'])
 
-    # Unir ambos datasets
+    # Merge and clean
     corpus_df = pd.concat([dataset_df, neg_df], ignore_index=True)
-
-    # Remove duplicate texts
     corpus_df = corpus_df.drop_duplicates(subset='text')
-
-    # Shuffle the entire dataset
     corpus_df = corpus_df.sample(frac=1, random_state=RANDOM_SEED).reset_index(drop=True)
 
     print("Label distribution in the combined corpus:")
@@ -61,11 +67,28 @@ def load_dataset():
 
     return corpus_df
 
+
 def get_fasttext_model():
+    """
+    Download and load the FastText model for Galician language (if not already present).
+
+    Returns:
+        fasttext.FastText._FastText: Loaded FastText model.
+    """
     fasttext.util.download_model('gl', if_exists='ignore')
     return fasttext.load_model('cc.gl.300.bin')
 
+
 def plot_conf_matrix(y_true, y_pred, title, save_path=None):
+    """
+    Plot and display a confusion matrix using seaborn heatmap.
+
+    Args:
+        y_true (array-like): Ground truth (correct) target values.
+        y_pred (array-like): Estimated targets as returned by a classifier.
+        title (str): Title of the plot.
+        save_path (str, optional): If provided, saves the plot to this path.
+    """
     cm = confusion_matrix(y_true, y_pred)
     plt.figure(figsize=(6,5))
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', cbar=False)
@@ -79,7 +102,19 @@ def plot_conf_matrix(y_true, y_pred, title, save_path=None):
     plt.show()
     plt.close()
 
+
 def prepare_embeddings(text_series, fasttext_model, batch_size=1000):
+    """
+    Generate document embeddings by averaging FastText word vectors.
+
+    Args:
+        text_series (pandas.Series): Series of text documents.
+        fasttext_model: Loaded FastText model.
+        batch_size (int, optional): Number of texts to process per batch. Default is 1000.
+
+    Returns:
+        numpy.ndarray: Array of shape (n_samples, 300) with averaged embeddings.
+    """
     tokenizer = TweetTokenizer(preserve_case=False, reduce_len=True)
     embeddings = []
 
@@ -101,6 +136,18 @@ def prepare_embeddings(text_series, fasttext_model, batch_size=1000):
 
 
 def train_model(X_train, y_train, combined_features, param_grid):
+    """
+    Train a classification model using grid search with cross-validation.
+
+    Args:
+        X_train (array-like): Feature matrix for training.
+        y_train (array-like): Labels corresponding to training data.
+        combined_features: Scikit-learn pipeline or model with transformers and estimator.
+        param_grid (dict): Dictionary with parameters names as keys and lists of parameter settings to try as values.
+
+    Returns:
+        sklearn.base.BaseEstimator: Best trained model from grid search.
+    """
     grid_search = GridSearchCV(estimator=combined_features, param_grid=param_grid, scoring='f1', cv=10)
     grid_search.fit(X_train, y_train)
     trained_model = grid_search.best_estimator_
@@ -109,10 +156,9 @@ def train_model(X_train, y_train, combined_features, param_grid):
 
 # ---------- MAIN ----------
 
-# Load and label data
 df = load_dataset()
 
-# Delete empty text o NaN
+# Remove empty or NaN text entries (just in case, to avoid downstream errors)
 df = df.dropna(subset=['text'])                      
 df = df[df['text'].str.strip() != ""]          
 
@@ -124,9 +170,9 @@ if not os.path.exists('cc.gl.300.bin'):
     fasttext.util.download_model('gl', if_exists='ignore')
 fasttext_model = fasttext.load_model('cc.gl.300.bin')
 
-# Embeddings en batches
+# Generate FastText sentence embeddings in batches
 sentence_embeddings = prepare_embeddings(X, fasttext_model, batch_size=1000)
-print("FORMA sentence_embeddings:", sentence_embeddings.shape)
+print("Shape of sentence_embeddings:", sentence_embeddings.shape)
 
 # TF-IDF + chi2 feature selection
 vectorizer = CountVectorizer()
@@ -141,19 +187,13 @@ selected_features = k_best_selector.fit_transform(tfidf_features, y)
 sparse_embeddings = sparse.csr_matrix(sentence_embeddings)
 combined_features = hstack([sparse_embeddings, selected_features])
 
-print("Forma de combined_features:", combined_features.shape)
-print("FORMA y:", y.shape)
-
-sparse_embeddings = sparse.csr_matrix(sentence_embeddings)
-combined_features = hstack([sparse_embeddings, selected_features])
+print("Shape of combined_features:", combined_features.shape)
+print("Shape of y:", y.shape)
 
 param_grid = {
     'kernel': ['poly'],
     'C': [1]
 }
-
-print("Forma de combined_features:", combined_features.shape)
-print("FORMA y:", y.shape)
 
 # Split the dataset into training and test sets, with 70% training and 30% testing
 X_train, X_test, y_train, y_test = train_test_split(combined_features, y, test_size=0.3, random_state=RANDOM_SEED)
@@ -162,11 +202,12 @@ svc = SVC(random_state=RANDOM_SEED)
 trained_model = train_model(X_train, y_train, svc, param_grid)
 
 # Save trained model
-joblib.dump(trained_model, 'model_SVM_instagram_fasttext.pkl')
+joblib.dump(trained_model, 'insta_svm_fasttext_tfidf_batches.pkl')
 
 
 # ----------- EVALUATION -----------
 
+# Predict on the test set
 y_pred = trained_model.predict(X_test)
 
 print("\n Evaluation on Test Set: \n")
@@ -188,10 +229,10 @@ with open(report_path, "w", encoding="utf-8") as f:
 
 print(f" Classification report saved to {report_path}")
 
-# Confusion Matrix
+# Plot and save confusion matrix
 plot_conf_matrix(y_test, y_pred, "Confusion Matrix", matrix_path)
 
-# Save classification report
+# Save test set predictions to CSV
 X_test_raw = pd.DataFrame({
     'text': X_test,
     'true_label': y_test.values,

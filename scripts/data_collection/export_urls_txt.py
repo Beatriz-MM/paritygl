@@ -8,7 +8,7 @@ import os
 
 # IMPORTANT: Insert correct paths
 json_path = "" # Example: "~/Posts/filtered_data.json"
-destination_path = "" # Example: "~/Comentarios/urls_comentarios/"
+destination_path = "" # Example: "~/Comments/urls_comments/"
 
 # Specify encoding="utf-8" to correctly read the JSON file in Galician and Spanish
 with open(json_path, "r", encoding="utf-8") as file:

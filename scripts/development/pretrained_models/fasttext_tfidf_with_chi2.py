@@ -1,6 +1,9 @@
 # Author: Beatriz Molina Muñiz (GitHub: @Beatriz-MM)
-# Last modified: 
-# Description: 
+# Last modified: 23/06/2025
+# Description: Loads and preprocesses two labeled datasets (non-misogynistic toots and misogynistic tweets), 
+# generates sentence embeddings using a FastText Galician model, combines them with TF-IDF features selected 
+# via chi2 test, and trains an SVM classifier to detect misogynistic content.
+# The model is evaluated on a separate sample dataset of Instagram comments and used to generate predictions.
 # Python version: 3.10.12
 
 import os
@@ -23,20 +26,29 @@ from scipy.sparse import hstack
 RANDOM_SEED = 42
 
 # Paths for training datasets
-toots_csv_path = '/home/beaunix/TFG/GalMisoCorpus2023/corpus/toots.csv'
-tweets_csv_path = '/home/beaunix/TFG/tweets.csv'
+toots_csv_path = ""# Example: "~/corpus/toots.csv"
+tweets_csv_path = ""# Example: "~/corpus/tweets.csv"
 
-# Path for the CSV
-csv_sample = '/home/beaunix/TFG/langdetect/PRUEBA/EntrenoPrevios/csv_gl_comments_prueba.csv'
+# Path sample CSV
+csv_sample = ""# Example: "~/petrained_models/csv_gl_comments_sample.csv"
 
 # Output path for predictions
-output_path = '/home/beaunix/TFG/langdetect/PRUEBA/EntrenoPrevios/Resultados/predictions_with_chi2.csv'
-confusion_matrix_path = "./Resultados/confusion_matrix_with_chi2.png"
+output_path = ""# Example: "~/Results_with_chi2/predictions_with_chi2.csv"
+confusion_matrix_path = ""# Example: "~/Results_with_chi2/confusion_matrix_with_chi2.png"
 
 
 # ------------------ PREPROCESSING ------------------
 
 def preprocess_tweet(tweet):
+    """
+    Clean and normalize a tweet by removing noise and standardizing the text.
+
+    Args:
+        tweet (str): Raw tweet text.
+        
+    Returns:
+        str or None: Cleaned tweet text, or None if input is invalid or results in empty string.
+    """
     if not isinstance(tweet, str) or tweet is None:
         return None
     
@@ -51,7 +63,22 @@ def preprocess_tweet(tweet):
         return None
     return tweet
 
+
 def generate_sentence_embeddings(tweet, fasttext_model):
+    """
+    Generates a sentence embedding by averaging FastText word vectors for the given tweet.
+
+    Args:
+        tweet (str): Preprocessed text of a tweet.
+        fasttext_model (fasttext.FastText._FastText): Pretrained FastText model.
+
+    Returns:
+        str: Space-separated string of the averaged embedding values.
+
+    Raises:
+        ValueError: If no tokens are extracted from the tweet.
+        Exception: If any other error occurs during embedding generation.
+    """
     try: 
         tokenizer = TweetTokenizer(preserve_case=False, reduce_len=True)
         tokens = tokenizer.tokenize(tweet)
@@ -67,33 +94,63 @@ def generate_sentence_embeddings(tweet, fasttext_model):
         print(f"Error generating embeddings for tweet '{tweet}': {e}")
         raise
 
+
 def load_datasets():
-    # Load class 0: non-misogynistic toots
+    """
+    Load, clean, and label two datasets: non-misogynistic toots (class 0) and misogynistic tweets (class 1).
+
+    Returns:
+        tuple: 
+            - X (pandas.Series): Combined and preprocessed text data.
+            - y (pandas.Series): Corresponding binary labels (0 for non-misogynistic, 1 for misogynistic).
+    """
     df_toots = pd.read_csv(toots_csv_path)
     df_toots['content'] = df_toots['content'].apply(preprocess_tweet)
     df_toots = df_toots.dropna(subset=['content']) 
     X_0 = df_toots['content']
     y_0 = pd.Series([0] * len(X_0))
 
-    # Load class 1: misogynistic tweets
     df_tweets = pd.read_csv(tweets_csv_path)
     df_tweets['content'] = df_tweets['content'].apply(preprocess_tweet)
     df_tweets = df_tweets.dropna(subset=['content']) 
     X_1 = df_tweets['content'] 
     y_1 = pd.Series([1] * len(X_1))
 
-    # Merge datasets
     X = pd.concat([X_0, X_1], ignore_index=True)
     y = pd.concat([y_0, y_1], ignore_index=True)
 
     return X, y
 
+
 def prepare_embeddings(text_series, fasttext_model):
+    """
+    Applies sentence embedding generation to an entire text series.
+
+    Args:
+        text_series (pandas.Series): Series of preprocessed tweet texts.
+        fasttext_model (fasttext.FastText._FastText): Pretrained FastText model.
+
+    Returns:
+        np.ndarray: Array of sentence embeddings (as float32 vectors).
+    """
     sentence_embeddings = text_series.apply(lambda tweet: generate_sentence_embeddings(tweet, fasttext_model))
     sentence_embeddings = np.array(sentence_embeddings.tolist())
     return sentence_embeddings
 
+
 def train_model(X_train, y_train, combined_features, param_grid):
+    """
+    Trains a model using GridSearchCV to find the best hyperparameters based on F1 score.
+
+    Args:
+        X_train (scipy.sparse matrix): Training feature matrix.
+        y_train (pandas.Series or np.ndarray): Training labels.
+        combined_features (estimator): Estimator object (e.g., SVM) to be tuned.
+        param_grid (dict): Dictionary with parameters to search over.
+
+    Returns:
+        estimator: Trained model with the best found parameters.
+    """
     grid_search = GridSearchCV(estimator=combined_features, param_grid=param_grid, scoring='f1', cv=10)
     grid_search.fit(X_train, y_train)
     trained_model = grid_search.best_estimator_
@@ -125,7 +182,7 @@ selected_features = k_best_selector.fit_transform(tfidf_features, y)
 sentence_embeddings = [np.fromstring(embedding, sep=' ') for embedding in sentence_embeddings]
 sentence_embeddings = np.array(sentence_embeddings, dtype=np.float32)
 
-print("FORMA setence_embeddings: ", sentence_embeddings.shape)
+print("Shape of setence_embeddings: ", sentence_embeddings.shape)
 
 sparse_embeddings = sparse.csr_matrix(sentence_embeddings)
 combined_features = hstack([sparse_embeddings, selected_features])
@@ -135,29 +192,26 @@ param_grid = {
     'C': [1]
 }
 
-print("Forma de combined_features:", combined_features.shape)
-print("FORMA y:", y.shape)
+print("Shape of combined_features:", combined_features.shape)
+print("Shape of y:", y.shape)
 
-# Dividimos el dataset en conjuntos de entrenamiento y testing, siendo el 70% entrenamiento y 30% pruebas
+# Split the dataset into training and test sets (70% training, 30% testing)
 X_train, X_test, y_train, y_test = train_test_split(combined_features, y, test_size=0.3, random_state=RANDOM_SEED)
 
 
 svc = SVC(random_state=RANDOM_SEED)
 trained_model = train_model(X_train, y_train, svc, param_grid)
 
-# Generamos la matriz de confusión
+# Generate the confusion matrix
 y_pred = trained_model.predict(X_test)
 cmatrix = confusion_matrix(y_test, y_pred)
 cmDisplay = ConfusionMatrixDisplay(cmatrix)
 
-y_pred = trained_model.predict(X_test)
 print("Evaluation on Test Set:")
 print(f"F1 Score: {f1_score(y_test, y_pred, average='weighted'):.4f}")
 print(f"Precision: {precision_score(y_test, y_pred, average='weighted'):.4f}")
 print(f"Recall: {recall_score(y_test, y_pred, average='weighted'):.4f}")
 print(f"Accuracy: {accuracy_score(y_test, y_pred):.4f}")
-#cmDisplay.plot()
-#plt.show()
 
 # Plot the confusion matrix
 plt.figure(figsize=(8, 6))
@@ -196,8 +250,8 @@ new_text_embeddings_sparse = sparse.csr_matrix(new_text_embeddings)
 new_combined_features = hstack([new_text_embeddings_sparse, new_selected_features])
 
 # Check feature dimensions before prediction
-print("Forma de new_combined_features:", new_combined_features.shape)
-print("Modelo espera:", trained_model.n_features_in_)
+print("Shape of new_combined_features:", new_combined_features.shape)
+print("Model expects:", trained_model.n_features_in_)
 
 # Predict and save results
 predictions = trained_model.predict(new_combined_features)
