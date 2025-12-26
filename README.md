@@ -27,6 +27,7 @@ This work builds upon the [GalMisoCorpus2023](https://github.com/luciamariaalvar
 > [!NOTE]
 > A descrición detallada do proxecto, metodoloxía e resultados está dispoñíbel na memoria do TFG.  
 > A detailed description of the project, methodology, and results is available in the thesis report.
+> 
 > [Ligazón/Link](https://hdl.handle.net/2183/45567)
 
 ---
