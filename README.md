@@ -44,7 +44,7 @@ This work builds upon the [GalMisoCorpus2023](https://github.com/luciamariaalvar
   - 📄 `emoji_analysis/` — Análise de emojis nos comentarios / Emoji analysis
   - 📄 `preprocessing/` — Limpeza e preparación textual / Text cleaning and preprocessing
 
-
+<br>
 
 ## 📦 Instalación / Installation
 
@@ -73,15 +73,14 @@ Se este traballo che resulta útil, agradécese que o cites. / If you find this 
       url          = {https://hdl.handle.net/2183/45567}
     }
 ```
-
----
+<br>
 
 ## ⚠️ Aviso / Disclaimer
 
 > Este repositorio contén datos recollidos de redes sociais e pode incluír contido sensible ou ofensivo.  
-> This repository contains social media data and may include sensitive or offensive content.  
->  
-> O uso deste material está restrinxido a fins de investigación ou educativos.  
+> O uso deste material está restrinxido a fins de investigación ou educativos.
+> 
+> This repository contains social media data and may include sensitive or offensive content.    
 > Use of this material is restricted to research or educational purposes only.
 
 ---
