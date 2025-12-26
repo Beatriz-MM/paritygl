@@ -65,7 +65,13 @@ pip install -r requirements.txt
 Se este traballo che resulta útil, agradécese que o cites.
 If you find this work helpful, please consider citing it.
 
-    (BibTeX ou referencia aparecerá aquí se é necesario máis adiante)
+    @misc{molina2025analise,
+      author       = {Beatriz Molina Muñiz},
+      title        = {Análise de toxicidade en contas galegas de Instagram: desenvolvemento dun sistema de detección},
+      year         = {2025},
+      howpublished = {Trabajo Fin de Grao, Universidade da Coruña},
+      url          = {https://hdl.handle.net/2183/45567}
+    }
 
 ## ⚠️ Aviso / Disclaimer
 
@@ -77,11 +83,11 @@ If you find this work helpful, please consider citing it.
 
 ## 🔗 Ligazóns / Links
 
-    📄 [Publicación do TFG](https://hdl.handle.net/2183/45567)
+  📄 [Publicación do TFG](https://hdl.handle.net/2183/45567)
 
-    📧 Contacto: bmolinamuniz94@gmail.com
+  📧 bmolinamuniz94@gmail.com
 
-    📸 Instagram: @paritygl
+  📸 Instagram: @paritygl
 
 ## 🛡️ Licenza / License
 
