@@ -58,7 +58,7 @@ pip install -r requirements.txt
 > O ficheirto atópase en / The file is located in   
 > https://github.com/luciamariaalvarezcrespo/GalMisoCorpus2023/blob/main/requirements.txt
 
-
+---
 
 ## 💬 Citá / Citation
 
@@ -73,6 +73,9 @@ Se este traballo che resulta útil, agradécese que o cites. / If you find this 
       url          = {https://hdl.handle.net/2183/45567}
     }
 ```
+
+---
+
 ## ⚠️ Aviso / Disclaimer
 
 > Este repositorio contén datos recollidos de redes sociais e pode incluír contido sensible ou ofensivo.  
@@ -81,6 +84,8 @@ Se este traballo che resulta útil, agradécese que o cites. / If you find this 
 > O uso deste material está restrinxido a fins de investigación ou educativos.  
 > Use of this material is restricted to research or educational purposes only.
 
+---
+
 ## 🔗 Ligazóns / Links
 
   📄 [Publicación do TFG](https://hdl.handle.net/2183/45567)
@@ -88,6 +93,8 @@ Se este traballo che resulta útil, agradécese que o cites. / If you find this 
   📧 bmolinamuniz94@gmail.com
 
   📸 Instagram: @paritygl
+
+---  
 
 ## 🛡️ Licenza / License
 
@@ -101,7 +108,6 @@ Isto significa que:
 
 ➡️ Para máis detalles, consulta o arquivo [`COMMONS-CLAUSE.txt`](./COMMONS-CLAUSE.txt) ou visita [https://commonsclause.com](https://commonsclause.com).
 
----
 
 This project uses the **Mozilla Public License 2.0 (MPL-2.0)** for all source code.
 
