@@ -65,6 +65,7 @@ pip install -r requirements.txt
 Se este traballo che resulta útil, agradécese que o cites.
 If you find this work helpful, please consider citing it.
 
+```bibtex
     @misc{molina2025analise,
       author       = {Beatriz Molina Muñiz},
       title        = {Análise de toxicidade en contas galegas de Instagram: desenvolvemento dun sistema de detección},
@@ -72,7 +73,7 @@ If you find this work helpful, please consider citing it.
       howpublished = {Trabajo Fin de Grao, Universidade da Coruña},
       url          = {https://hdl.handle.net/2183/45567}
     }
-
+```
 ## ⚠️ Aviso / Disclaimer
 
 > Este repositorio contén datos recollidos de redes sociais e pode incluír contido sensible ou ofensivo.  
