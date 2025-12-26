@@ -106,8 +106,7 @@ Isto significa que:
 - Non podes **vender**, redistribuír ou ofrecer o software como parte dun produto ou servizo comercial sen permiso explícito.
 
 ➡️ Para máis detalles, consulta o arquivo [`COMMONS-CLAUSE.txt`](./COMMONS-CLAUSE.txt) ou visita [https://commonsclause.com](https://commonsclause.com).
-
-
+<br>
 This project uses the **Mozilla Public License 2.0 (MPL-2.0)** for all source code.
 
 However, files authored by the project creator are also subject to the **Commons Clause License Condition v1.0**, which restricts the right to use the software for commercial purposes.
