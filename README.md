@@ -62,8 +62,7 @@ pip install -r requirements.txt
 
 ## 💬 Citá / Citation
 
-Se este traballo che resulta útil, agradécese que o cites.
-If you find this work helpful, please consider citing it.
+Se este traballo che resulta útil, agradécese que o cites. / If you find this work helpful, please consider citing it.
 
 ```bibtex
     @misc{molina2025analise,
