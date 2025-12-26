@@ -25,8 +25,9 @@ This repository contains the code, the original datasets, and the final corpus d
 This work builds upon the [GalMisoCorpus2023](https://github.com/luciamariaalvarezcrespo/GalMisoCorpus2023) project by evaluating its models in the context of Instagram and developing new solutions adapted to this platform.
 
 > [!NOTE]
-> A descrición detallada do proxecto, metodoloxía e resultados está dispoñíbel na memoria do TFG (enlace próximamente).  
-> A full project description and methodology will be available in the thesis report (coming soon).
+> A descrición detallada do proxecto, metodoloxía e resultados está dispoñíbel na memoria do TFG.  
+> A detailed description of the project, methodology, and results is available in the thesis report.
+> [Ligazón/Link](https://hdl.handle.net/2183/45567)
 
 ---
 
