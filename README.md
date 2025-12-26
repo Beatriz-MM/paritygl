@@ -77,7 +77,7 @@ If you find this work helpful, please consider citing it.
 
 ## 🔗 Ligazóns / Links
 
-    📄 Publicación do TFG (próximamente)
+    📄 [Publicación do TFG](https://hdl.handle.net/2183/45567)
 
     📧 Contacto: bmolinamuniz94@gmail.com
 
